@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>For You</title>
+
+<!-- ============================================================
+     EDIT ME: page title above. Every text block marked "EDIT:"
+     inside /pages/*.html is meant for you to personalize.
+
+     IMPORTANT — HOW TO RUN THIS SITE:
+     Each "page" (Welcome, Memories, Letter, etc.) lives in its own
+     file inside /pages/ and is loaded with jQuery AJAX so moving
+     between pages never reloads or refreshes the browser.
+     Browsers block AJAX file-loading when you just double-click
+     index.html (file:// links get a CORS error). So run this
+     through a local server:
+       - XAMPP: drop this whole folder into htdocs, then open it
+         via http://localhost/birthday-site/
+       - VS Code: use the "Live Server" extension
+     Opening index.html directly by double-clicking will show the
+     unlock screen, but the pages after it won't load.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Toast container -->
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1080;">
+  <div id="mainToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="mainToastBody">Message</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     UNLOCK SCREEN
+     ============================================================ -->
+<section id="unlock-screen">
+  <!-- soft floating balloon accents, purely decorative -->
+  <svg class="unlock-balloon unlock-balloon--1" viewBox="0 0 60 90" aria-hidden="true"><use href="#svg-balloon"></use></svg>
+  <svg class="unlock-balloon unlock-balloon--2" viewBox="0 0 60 90" aria-hidden="true"><use href="#svg-balloon"></use></svg>
+
+  <div class="unlock-inner">
+    <p class="unlock-eyebrow">a website</p>
+    <h1 class="unlock-title">This website is only for one person.</h1>
+    <p class="unlock-line">If you're seeing this, I hope you know who you are.</p>
+    <div class="unlock-divider" aria-hidden="true">
+      <svg viewBox="0 0 60 20" width="60" height="20"><use href="#svg-heart-outline"></use></svg>
+    </div>
+    <p class="unlock-prompt">Enter the special litle name I always use for you-the one that holds all my love.</p>
+    <form id="unlockForm" class="unlock-form" autocomplete="off">
+      <input type="password" id="secretInput" class="unlock-input" placeholder="•••••••••" aria-label="Enter the secret password" required>
+      <button type="submit" class="unlock-btn">Unlock <span class="arrow">&rarr;</span></button>
+    </form>
+  </div>
+</section>
+
+<!-- ============================================================
+     MAIN APP — hidden until unlocked
+     ============================================================ -->
+<div id="main-site" class="d-none">
+
+  <!-- soft decorative balloons drifting behind content, very subtle -->
+  <div class="ambient-balloons" aria-hidden="true">
+    <svg class="ambient-balloon ambient-balloon--a" viewBox="0 0 60 90"><use href="#svg-balloon"></use></svg>
+    <svg class="ambient-balloon ambient-balloon--b" viewBox="0 0 60 90"><use href="#svg-balloon"></use></svg>
+    <svg class="ambient-balloon ambient-balloon--c" viewBox="0 0 60 90"><use href="#svg-balloon"></use></svg>
+  </div>
+
+  <nav id="storyNav" aria-label="Page navigation">
+    <button id="navToggle" class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul id="navDots" class="nav-dots"></ul>
+  </nav>
+
+  <div id="navMenu" class="nav-menu">
+    <ul id="navMenuList" class="nav-menu-list"></ul>
+  </div>
+
+  <!-- AJAX-loaded page content lands here -->
+  <main id="pageContent" class="page-content" aria-live="polite"></main>
+
+  <!-- Persistent prev/next bar -->
+  <div id="pagerBar" class="pager-bar">
+    <button id="prevPageBtn" class="pager-btn pager-btn--prev" aria-label="Previous">
+      <span class="arrow">&larr;</span> Back
+    </button>
+    <span id="pagerLabel" class="pager-label"></span>
+    <button id="nextPageBtn" class="pager-btn pager-btn--next" aria-label="Next">
+      Next <span class="arrow">&rarr;</span>
+    </button>
+  </div>
+
+  <!-- AJAX loading indicator -->
+  <div id="pageLoader" class="page-loader d-none">
+    <svg viewBox="0 0 40 40" width="34" height="34" class="loader-spin"><use href="#svg-loader-ring"></use></svg>
+  </div>
+
+  <!-- friendly fallback if AJAX is blocked (e.g. opened via file://) -->
+  <div id="ajaxErrorNotice" class="ajax-error-notice d-none">
+    <p><strong>This page couldn't load.</strong></p>
+    <p>This site loads each page with AJAX, which most browsers block when you open the file directly. Please run it through a local server — for example, place this folder inside XAMPP's <code>htdocs</code> and open it via <code>http://localhost/</code>, or use VS Code's "Live Server" extension.</p>
+  </div>
+
+</div><!-- /#main-site -->
+
+<!-- Shared surprise-box modal -->
+<div class="modal fade" id="surpriseModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content surprise-modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="surpriseModalTitle">Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="surpriseModalPhoto" class="surprise-modal-photo d-none"><img src="" alt="A surprise photo"></div>
+        <p id="surpriseModalBody">Body text</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     REUSABLE SVG SYMBOLS (referenced with <use> throughout)
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="svg-heart-outline" viewBox="0 0 60 20">
+      <path d="M2 10 C2 4 8 2 14 6 C20 2 26 4 26 10 C26 4 32 2 38 6 C44 2 50 4 50 10" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    </symbol>
+
+    <symbol id="svg-balloon" viewBox="0 0 60 90">
+      <ellipse cx="30" cy="30" rx="26" ry="30" fill="currentColor" opacity="0.85"/>
+      <path d="M30 60 L26 66 L34 66 Z" fill="currentColor" opacity="0.85"/>
+      <path d="M30 66 C 26 74, 34 78, 30 88" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+    </symbol>
+
+    <symbol id="svg-loader-ring" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="70 30" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="svg-cake" viewBox="0 0 220 200">
+      <ellipse cx="110" cy="178" rx="90" ry="14" fill="var(--color-plum)" opacity="0.08"/>
+      <rect x="40" y="120" width="140" height="55" rx="8" fill="var(--color-cake-base)"/>
+      <rect x="40" y="120" width="140" height="14" fill="var(--color-cake-icing)"/>
+      <rect x="55" y="80" width="110" height="45" rx="8" fill="var(--color-cake-tier)"/>
+      <rect x="55" y="80" width="110" height="12" fill="var(--color-cake-icing)"/>
+      <path d="M55 92 q6 8 12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0" fill="none" stroke="var(--color-cake-icing)" stroke-width="4"/>
+      <path d="M40 133 q7 8 14 0 t14 0 t14 0 t14 0 t14 0 t14 0 t14 0 t14 0 t14 0 t14 0" fill="none" stroke="var(--color-cake-icing)" stroke-width="4"/>
+    </symbol>
+  </defs>
+</svg>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

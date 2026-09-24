@@ -1,0 +1,39 @@
+<section class="page page--finale">
+  <div class="container finale-content">
+
+    <div id="finaleCakeStage" class="finale-cake-stage">
+      <p class="finale-kicker">And finally&hellip;</p>
+      <h2 class="finale-prompt">Make a wish, then blow the candle.</h2>
+
+      <div class="cake-wrap">
+        <svg class="cake-svg" viewBox="0 0 220 220" aria-hidden="true">
+          <use href="#svg-cake"></use>
+          <rect x="106" y="55" width="8" height="26" rx="2" fill="var(--color-candle)"/>
+          <ellipse id="flame" class="flame" cx="110" cy="49" rx="6" ry="11"/>
+        </svg>
+        <button id="blowCandleBtn" class="btn-story btn-story-dark">Blow the candle <span class="arrow">&rarr;</span></button>
+      </div>
+    </div>
+
+    <div id="finaleReveal" class="finale-reveal d-none">
+      <p class="finale-kicker">Happy Birthday</p>
+      <!-- EDIT: his name -->
+      <h2 class="finale-title">HAPPY BIRTHDAY</h2>
+      <p class="finale-name">Gaurav</p>
+      <p class="finale-message">
+        Here's to another year of you,<br>
+        another year of us,<br>
+        and many more memories together.
+      </p>
+      <div class="finale-photo-card">
+        <div class="photo-card">
+          <div class="photo-card-frame"><img src="images/photo8.jpg" alt="A photo of us" loading="lazy"></div>
+          <svg class="photo-card-heart" viewBox="0 0 60 20" aria-hidden="true"><use href="#svg-heart-outline"></use></svg>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="confettiCanvas"></canvas>
+    <div id="balloonRise" class="balloon-rise" aria-hidden="true"></div>
+  </div>
+</section>
